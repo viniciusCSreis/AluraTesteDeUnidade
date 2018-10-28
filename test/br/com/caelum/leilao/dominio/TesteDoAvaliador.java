@@ -2,15 +2,13 @@ package br.com.caelum.leilao.dominio;
 
 
 import br.com.caelum.leilao.dominio.builder.LeilaoBuilder;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.AfterAll;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
 class TesteDoAvaliador {
@@ -146,11 +144,12 @@ class TesteDoAvaliador {
     public void deveEncontrarOsTresMaioresLancesDe0Lances() {
 
         Leilao leilao= new LeilaoBuilder().para("Playstation 3 Novo").constroi();
-        leiloeiro.avalia(leilao);
 
-        List<Lance> maiores = leiloeiro.getTresMaiores();
-
-        assertEquals(0, maiores.size());
+        assertThrows(
+                RuntimeException.class,
+                () -> leiloeiro.avalia(leilao),
+                "Não é possível avaliar um leilão sem lances"
+        );
     }
 
 
@@ -175,10 +174,13 @@ class TesteDoAvaliador {
     public void testaMediaDeZeroLance(){
 
         Leilao leilao= new LeilaoBuilder().para("Playstation 3 Novo").constroi();
-        leiloeiro.avalia(leilao);
 
         //validacao
-        assertEquals(0, leiloeiro.getMediaLance(), 0.0001);
+        assertThrows(
+                RuntimeException.class,
+                () -> leiloeiro.avalia(leilao),
+                "Não é possível avaliar um leilão sem lances"
+        );
 
     }
 }
