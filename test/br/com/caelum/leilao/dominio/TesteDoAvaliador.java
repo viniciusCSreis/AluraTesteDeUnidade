@@ -1,30 +1,45 @@
 package br.com.caelum.leilao.dominio;
 
 
+import br.com.caelum.leilao.dominio.builder.LeilaoBuilder;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.AfterAll;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+
 class TesteDoAvaliador {
+
+    private Avaliador leiloeiro;
+    private Usuario joao;
+    private Usuario jose;
+    private Usuario maria;
+
+    @BeforeEach
+    public void init(){
+
+        this.leiloeiro = new Avaliador();
+        this.joao = new Usuario("Joao");
+        this.jose = new Usuario("José");
+        this.maria = new Usuario("Maria");
+    }
 
     @Test
     public void deveEntenderLancesEmOrdemCrescente() {
-        // cenario: 3 lances em ordem crescente
-        Usuario joao = new Usuario("Joao");
-        Usuario jose = new Usuario("José");
-        Usuario maria = new Usuario("Maria");
 
 
-        Leilao leilao = new Leilao("Playstation 3 Novo");
-
-        leilao.propoe(new Lance(maria, 250.0));
-        leilao.propoe(new Lance(joao, 300.0));
-        leilao.propoe(new Lance(jose, 400.0));
+        Leilao leilao= new LeilaoBuilder().para("Playstation 3 Novo")
+                .lance(maria, 250.0)
+                .lance(joao, 300.0)
+                .lance(jose, 400.0)
+                .constroi();
 
         // executando a acao
-        Avaliador leiloeiro = new Avaliador();
         leiloeiro.avalia(leilao);
 
         double maiorEsperado = 400;
@@ -36,21 +51,15 @@ class TesteDoAvaliador {
     }
     @Test
     public void deveEntenderLancesEmOrdemDecrescente() {
-        // cenario: 3 lances em ordem crescente
-        Usuario joao = new Usuario("Joao");
-        Usuario jose = new Usuario("José");
-        Usuario maria = new Usuario("Maria");
 
 
-        Leilao leilao = new Leilao("Playstation 3 Novo");
+        Leilao leilao= new LeilaoBuilder().para("Playstation 3 Novo")
+                .lance(maria, 400.0)
+                .lance(joao, 300.0)
+                .lance(jose, 200.0)
+                .lance(maria, 100.00)
+                .constroi();
 
-        leilao.propoe(new Lance(maria, 400.0));
-        leilao.propoe(new Lance(joao, 300.0));
-        leilao.propoe(new Lance(jose, 200.0));
-        leilao.propoe(new Lance(maria, 100.00));
-
-        // executando a acao
-        Avaliador leiloeiro = new Avaliador();
         leiloeiro.avalia(leilao);
 
         double maiorEsperado = 400.0;
@@ -62,23 +71,16 @@ class TesteDoAvaliador {
     }
     @Test
     public void deveEntenderLancesEmOrdemAleatoria() {
-        // cenario: 3 lances em ordem crescente
-        Usuario joao = new Usuario("Joao");
-        Usuario jose = new Usuario("José");
-        Usuario maria = new Usuario("Maria");
 
+        Leilao leilao= new LeilaoBuilder().para("Playstation 3 Novo")
+                .lance(maria, 200)
+                .lance(joao, 450)
+                .lance(jose, 120)
+                .lance(maria, 700)
+                .lance(joao, 630)
+                .lance(jose, 230)
+                .constroi();
 
-        Leilao leilao = new Leilao("Playstation 3 Novo");
-
-        leilao.propoe(new Lance(maria, 200));
-        leilao.propoe(new Lance(joao, 450));
-        leilao.propoe(new Lance(jose, 120));
-        leilao.propoe(new Lance(maria, 700));
-        leilao.propoe(new Lance(joao, 630));
-        leilao.propoe(new Lance(jose, 230));
-
-        // executando a acao
-        Avaliador leiloeiro = new Avaliador();
         leiloeiro.avalia(leilao);
 
         double maiorEsperado = 700;
@@ -91,12 +93,12 @@ class TesteDoAvaliador {
 
     @Test
     public void deveEntenderLeilaoComApenasUmLance() {
-        Usuario joao = new Usuario("Joao");
-        Leilao leilao = new Leilao("Playstation 3 Novo");
 
-        leilao.propoe(new Lance(joao,1000.0));
 
-        Avaliador leiloeiro = new Avaliador();
+        Leilao leilao= new LeilaoBuilder().para("Playstation 3 Novo")
+                .lance(joao, 1000.0)
+                .constroi();
+
         leiloeiro.avalia(leilao);
 
         assertEquals(1000, leiloeiro.getMaiorLance(), 0.0001);
@@ -105,17 +107,15 @@ class TesteDoAvaliador {
 
     @Test
     public void deveEncontrarOsTresMaioresLancesDe5Lances() {
-        Usuario joao = new Usuario("João");
-        Usuario maria = new Usuario("Maria");
-        Leilao leilao = new Leilao("Playstation 3 Novo");
 
-        leilao.propoe(new Lance(joao, 100.0));
-        leilao.propoe(new Lance(maria, 200.0));
-        leilao.propoe(new Lance(joao, 300.0));
-        leilao.propoe(new Lance(maria, 400.0));
-        leilao.propoe(new Lance(joao, 500.00));
+        Leilao leilao= new LeilaoBuilder().para("Playstation 3 Novo")
+                .lance(joao, 100.0)
+                .lance(maria, 200.0)
+                .lance(joao, 300.0)
+                .lance(maria, 400.0)
+                .lance(joao, 500.0)
+                .constroi();
 
-        Avaliador leiloeiro = new Avaliador();
         leiloeiro.avalia(leilao);
 
         List<Lance> maiores = leiloeiro.getTresMaiores();
@@ -128,14 +128,12 @@ class TesteDoAvaliador {
 
     @Test
     public void deveEncontrarOsTresMaioresLancesDe2Lances() {
-        Usuario joao = new Usuario("João");
-        Usuario maria = new Usuario("Maria");
-        Leilao leilao = new Leilao("Playstation 3 Novo");
 
-        leilao.propoe(new Lance(joao, 100.0));
-        leilao.propoe(new Lance(maria, 200.0));
+        Leilao leilao= new LeilaoBuilder().para("Playstation 3 Novo")
+                .lance(joao, 100.0)
+                .lance(maria, 200.0)
+                .constroi();
 
-        Avaliador leiloeiro = new Avaliador();
         leiloeiro.avalia(leilao);
 
         List<Lance> maiores = leiloeiro.getTresMaiores();
@@ -146,12 +144,8 @@ class TesteDoAvaliador {
     }
     @Test
     public void deveEncontrarOsTresMaioresLancesDe0Lances() {
-        Usuario joao = new Usuario("João");
-        Usuario maria = new Usuario("Maria");
-        Leilao leilao = new Leilao("Playstation 3 Novo");
 
-
-        Avaliador leiloeiro = new Avaliador();
+        Leilao leilao= new LeilaoBuilder().para("Playstation 3 Novo").constroi();
         leiloeiro.avalia(leilao);
 
         List<Lance> maiores = leiloeiro.getTresMaiores();
@@ -163,20 +157,15 @@ class TesteDoAvaliador {
 
     @Test
     public void deveCalcularAMedia() {
-        // cenario: 3 lances em ordem crescente
-        Usuario joao = new Usuario("Joao");
-        Usuario jose = new Usuario("José");
-        Usuario maria = new Usuario("Maria");
 
-        Leilao leilao = new Leilao("Playstation 3 Novo");
+        Leilao leilao= new LeilaoBuilder().para("Playstation 3 Novo")
+                .lance(joao, 300.0)
+                .lance(maria, 400.0)
+                .lance(jose, 500.0)
+                .constroi();
 
-        leilao.propoe(new Lance(maria,300.0));
-        leilao.propoe(new Lance(joao,400.0));
-        leilao.propoe(new Lance(jose,500.0));
-
-        // executando a acao
-        Avaliador leiloeiro = new Avaliador();
         leiloeiro.avalia(leilao);
+
 
         // comparando a saida com o esperado
         assertEquals(400, leiloeiro.getMediaLance(), 0.0001);
@@ -185,17 +174,11 @@ class TesteDoAvaliador {
     @Test
     public void testaMediaDeZeroLance(){
 
-        // cenario
-        Usuario ewertom = new Usuario("Ewertom");
-
-        // acao
-        Leilao leilao = new Leilao("Iphone 7");
-
-        Avaliador avaliador = new Avaliador();
-        avaliador.avalia(leilao);
+        Leilao leilao= new LeilaoBuilder().para("Playstation 3 Novo").constroi();
+        leiloeiro.avalia(leilao);
 
         //validacao
-        assertEquals(0, avaliador.getMediaLance(), 0.0001);
+        assertEquals(0, leiloeiro.getMediaLance(), 0.0001);
 
     }
 }
